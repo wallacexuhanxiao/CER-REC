@@ -1,0 +1,16 @@
+model: event_gate_no_teacher
+dataset: beauty
+seed: 2026
+frozen_experts: true
+train_negatives: 32
+batch_size: 128
+max_history_length: 50
+relation_hidden_dim: 64
+route_hidden_dim: 128
+route_mode: learned
+learning_rate: 0.0003
+weight_decay: 0.00001
+dropout: 0.1
+max_epochs: 100
+early_stop_patience: 10
+
