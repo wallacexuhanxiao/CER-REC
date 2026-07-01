@@ -35,7 +35,7 @@ class CandidateDataset(Dataset):
         return self.histories.shape[0]
 
     def __getitem__(self, index):
-        return self.histories[index], self.candidates[index], self.user_lengths[index]
+        return index, self.histories[index], self.candidates[index], self.user_lengths[index]
 
 
 def load_pickle(path):
@@ -110,7 +110,7 @@ def run_model(model, cf_model, sem_model, loader, freq_tensor, args, device, ret
     model.eval()
     all_scores, all_gate_means, all_branch_masses, all_gates, all_masks, all_candidates = [], [], [], [], [], []
     with torch.no_grad():
-        for seq, candidates, user_lengths in loader:
+        for _, seq, candidates, user_lengths in loader:
             seq, candidates, user_lengths = seq.to(device), candidates.to(device), user_lengths.to(device)
             cf_states, sem_states, cf_candidates, sem_candidates = frozen_features(cf_model, sem_model, seq, candidates)
             history_mask = seq.ne(0)
@@ -152,6 +152,23 @@ def run_model(model, cf_model, sem_model, loader, freq_tensor, args, device, ret
     return result
 
 
+def load_route_teacher(args, num_samples, max_history_length, device):
+    if not args.route_teacher_dir:
+        return None
+    teacher_dir = Path(args.route_teacher_dir)
+    targets = np.load(teacher_dir / "route_targets.float16.npy").astype(np.float32)
+    weights = np.load(teacher_dir / "route_weights.float16.npy").astype(np.float32)
+    valid = np.load(teacher_dir / "route_valid_mask.npy").astype(bool)
+    expected_shape = (num_samples, max_history_length)
+    if targets.shape != expected_shape or weights.shape != expected_shape or valid.shape != expected_shape:
+        raise ValueError(f"route teacher shape mismatch: expected {expected_shape}, got {targets.shape}, {weights.shape}, {valid.shape}")
+    return {
+        "targets": torch.from_numpy(targets).to(device),
+        "weights": torch.from_numpy(weights).to(device),
+        "valid": torch.from_numpy(valid).to(device),
+    }
+
+
 def train_one(args, route_mode):
     set_seed(args.seed)
     data_dir = Path(args.data_dir)
@@ -172,6 +189,7 @@ def train_one(args, route_mode):
     test_loader = DataLoader(test_ds, batch_size=args.eval_batch_size)
 
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    route_teacher = load_route_teacher(args, len(train_ds), args.max_history_length, device)
     cf_model = SASRec(stats["num_items"], 64, args.max_history_length, 2, 2, 0.2).to(device)
     cf_model.load_state_dict(torch.load(args.cf_checkpoint, map_location=device)["model"])
     sem_model = SemanticSASRec(args.semantic_embedding_path, 64, 256, args.max_history_length, 2, 2, 0.2).to(device)
@@ -201,12 +219,14 @@ def train_one(args, route_mode):
     for epoch in range(1, args.max_epochs + 1):
         model.train()
         losses = []
-        for seq, candidates, user_lengths in train_loader:
+        route_losses = []
+        for indices, seq, candidates, user_lengths in train_loader:
+            teacher_index = indices.to(device)
             seq, candidates, user_lengths = seq.to(device), candidates.to(device), user_lengths.to(device)
             with torch.no_grad():
                 cf_states, sem_states, cf_candidates, sem_candidates = frozen_features(cf_model, sem_model, seq, candidates)
             history_mask = seq.ne(0)
-            scores, _, _ = model(
+            scores, gates, _ = model(
                 cf_states,
                 sem_states,
                 cf_candidates,
@@ -219,15 +239,33 @@ def train_one(args, route_mode):
                 args.cf_temperature,
                 args.semantic_temperature,
             )
-            loss = F.cross_entropy(scores, torch.zeros(scores.shape[0], dtype=torch.long, device=device))
+            rank_loss = F.cross_entropy(scores, torch.zeros(scores.shape[0], dtype=torch.long, device=device))
+            route_loss = torch.zeros((), device=device)
+            if route_teacher is not None and route_mode == "learned" and args.lambda_route > 0:
+                target_gate = gates[:, 0, :].clamp(1e-6, 1.0 - 1e-6)
+                teacher_targets = route_teacher["targets"][teacher_index]
+                teacher_weights = route_teacher["weights"][teacher_index]
+                teacher_valid = route_teacher["valid"][teacher_index] & history_mask
+                weights = teacher_weights * teacher_valid.float()
+                bce = F.binary_cross_entropy(target_gate, teacher_targets, reduction="none")
+                route_loss = (bce * weights).sum() / (weights.sum() + 1e-8)
+            loss = rank_loss + args.lambda_route * route_loss
             optimizer.zero_grad()
             loss.backward()
             optimizer.step()
-            losses.append(loss.item())
+            losses.append(rank_loss.item())
+            if route_teacher is not None and route_mode == "learned" and args.lambda_route > 0:
+                route_losses.append(route_loss.item())
         valid_output = run_model(model, cf_model, sem_model, valid_loader, freq_tensor, args, device)
         valid_ranks = ranks_from_scores(valid_output["scores"])
         valid_hr, valid_ndcg = metrics_from_ranks(valid_ranks)
-        row = {"epoch": epoch, "train_loss": float(np.mean(losses)), "valid_HR@10": valid_hr, "valid_NDCG@10": valid_ndcg}
+        row = {
+            "epoch": epoch,
+            "train_loss": float(np.mean(losses)),
+            "route_loss": float(np.mean(route_losses)) if route_losses else 0.0,
+            "valid_HR@10": valid_hr,
+            "valid_NDCG@10": valid_ndcg,
+        }
         logs.append(row)
         print(json.dumps({"route_mode": route_mode, **row}), flush=True)
         if valid_ndcg > best_ndcg:
@@ -245,6 +283,8 @@ def train_one(args, route_mode):
     hr, ndcg = metrics_from_ranks(ranks)
     metrics = {
         "route_mode": route_mode,
+        "lambda_route": args.lambda_route,
+        "route_teacher_dir": args.route_teacher_dir,
         "best_epoch": best_epoch,
         "HR@10": hr,
         "NDCG@10": ndcg,
@@ -304,6 +344,8 @@ def main():
     parser.add_argument("--early-stop-patience", type=int, default=10)
     parser.add_argument("--candidate-chunk-size", type=int, default=16)
     parser.add_argument("--cf-temperature", type=float, default=1.5190560817718506)
+    parser.add_argument("--route-teacher-dir", default=None)
+    parser.add_argument("--lambda-route", type=float, default=0.0)
     parser.add_argument("--semantic-temperature", type=float, default=1.35512113571167)
     parser.add_argument("--seed", type=int, default=2026)
     args = parser.parse_args()

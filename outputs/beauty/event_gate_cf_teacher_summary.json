@@ -1,0 +1,95 @@
+{
+  "teacher_dir": "/root/autodl-tmp/cer-rec/beauty/route_teacher",
+  "output_root": "/root/autodl-tmp/cer-rec/beauty/event_gate_cf_teacher",
+  "teacher_stats": {
+    "num_samples": 22363,
+    "max_history_length": 50,
+    "train_negatives": 32,
+    "seed": 2026,
+    "negative_seed": 2529,
+    "cf_abs_delta_q75": 0.3453766107559204,
+    "semantic_abs_delta_q75": 0.8155415058135986,
+    "valid_history_events": 128031,
+    "route_valid_events": 102285,
+    "route_valid_ratio": 0.7989080769501137,
+    "target_mean": 0.47533369064331055,
+    "target_p10": 0.0,
+    "target_p50": 0.4750862121582031,
+    "target_p90": 1.0,
+    "weight_mean": 0.7707076072692871,
+    "weight_p50": 0.9999998807907104,
+    "checksums": {
+      "cf_checkpoint": "c46532843b3f299e3bfc615f3e9d613aa15bec8de35b67a9f8c271aedd185116",
+      "semantic_checkpoint": "3019e4edbe8473e748170b8960bac52abf93bf70275feced7091e6c69476810c",
+      "semantic_embedding": "1f1339edf14fadd71ca158334cc6bf77b90cacc44b1dbc52df7db05e41339362",
+      "train": "bf555c03744adaa059f0b46f0754d4d831e38acc89f8e0a932344b074105731f",
+      "valid": "510cc5934fc77d172ee607dab69c689298a52018c7897ca07d94bbc0689fa432",
+      "test": "ee14420df8495c5c9572027cec4659904e7423411a3c640e316fc178c56ef268"
+    }
+  },
+  "baselines": {
+    "Semantic-only": {
+      "HR@10": 0.5013638599472343,
+      "NDCG@10": 0.29871559842540657,
+      "CF-Recovery": 0.0,
+      "Semantic-Retention": 1.0
+    },
+    "JointEventGate-NoTeacher": {
+      "HR@10": 0.49899387380941734,
+      "NDCG@10": 0.30614619758055434,
+      "CF-Recovery": 0.1534090909090909,
+      "Semantic-Retention": 0.8830658368817557,
+      "CF-only_cf_branch_mass": 0.012895660474896431,
+      "Semantic-only_cf_branch_mass": 0.1058373972773552
+    }
+  },
+  "EventGate-CFTeacher": {
+    "0.1": {
+      "HR@10": 0.4987702902115101,
+      "NDCG@10": 0.3052225932801987,
+      "CF-Recovery": 0.3246753246753247,
+      "Semantic-Retention": 0.8463806092368162,
+      "Oracle-Gap-Capture": -0.04707792207792277,
+      "CF-only_cf_branch_mass": 0.22493556141853333,
+      "Semantic-only_cf_branch_mass": 0.24436728656291962,
+      "cf_mass_direction_correct": false,
+      "overall_cf_branch_mass": 0.24052494764328003,
+      "Tail_cf_branch_mass": 0.26555874943733215,
+      "Mid_cf_branch_mass": 0.21897770464420319,
+      "Head_cf_branch_mass": 0.2370387762784958,
+      "best_epoch": 31
+    },
+    "0.3": {
+      "HR@10": 0.5040021464025399,
+      "NDCG@10": 0.3034993717882346,
+      "CF-Recovery": 0.31412337662337664,
+      "Semantic-Retention": 0.8848673435964625,
+      "Oracle-Gap-Capture": 0.047889610389610045,
+      "CF-only_cf_branch_mass": 0.2564864158630371,
+      "Semantic-only_cf_branch_mass": 0.23104803264141083,
+      "cf_mass_direction_correct": true,
+      "overall_cf_branch_mass": 0.24846279621124268,
+      "Tail_cf_branch_mass": 0.2254118174314499,
+      "Mid_cf_branch_mass": 0.24086636304855347,
+      "Head_cf_branch_mass": 0.279106080532074,
+      "best_epoch": 11
+    },
+    "1.0": {
+      "HR@10": 0.5020793274605375,
+      "NDCG@10": 0.29997562167053615,
+      "CF-Recovery": 0.37337662337662336,
+      "Semantic-Retention": 0.8735669832951195,
+      "Oracle-Gap-Capture": 0.01298701298701262,
+      "CF-only_cf_branch_mass": 0.34030041098594666,
+      "Semantic-only_cf_branch_mass": 0.278403639793396,
+      "cf_mass_direction_correct": true,
+      "overall_cf_branch_mass": 0.30280858278274536,
+      "Tail_cf_branch_mass": 0.24749784171581268,
+      "Mid_cf_branch_mass": 0.29311665892601013,
+      "Head_cf_branch_mass": 0.3678024709224701,
+      "best_epoch": 11
+    }
+  },
+  "best_by_hr": "0.3",
+  "best_by_ndcg": "0.1"
+}

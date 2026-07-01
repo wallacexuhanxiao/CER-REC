@@ -93,6 +93,7 @@ def main():
     parser.add_argument("--event-dir", default="outputs/beauty/event_gate")
     parser.add_argument("--expert-dir", default="outputs/beauty/expert_predictions")
     parser.add_argument("--score-router-summary", default="outputs/beauty/score_routers/summary.json")
+    parser.add_argument("--learned-label", default="EventGate-NoTeacher")
     args = parser.parse_args()
     data_dir = Path(args.data_dir)
     event_dir = Path(args.event_dir)
@@ -112,8 +113,10 @@ def main():
         "ScoreRouters": load_json(args.score_router_summary),
         "EventModels": {},
     }
-    for name, label in [("fixed_half", "DualEvent-NoRoute"), ("learned", "EventGate-NoTeacher")]:
+    for name, label in [("fixed_half", "DualEvent-NoRoute"), ("learned", args.learned_label)]:
         model_dir = event_dir / name
+        if not (model_dir / "test_scores.npy").exists():
+            continue
         scores = np.load(model_dir / "test_scores.npy")
         metrics = recovery(scores, cf_scores, sem_scores)
         if (model_dir / "target_event_gates.npy").exists() and (model_dir / "target_branch_masses.npy").exists():
