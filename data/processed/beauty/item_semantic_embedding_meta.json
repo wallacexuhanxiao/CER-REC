@@ -1,0 +1,11 @@
+{
+  "model": "Qwen3-Embedding-0.6B",
+  "model_id": "Qwen/Qwen3-Embedding-0.6B",
+  "num_items": 12101,
+  "embedding_dim": 1024,
+  "dtype": "float16",
+  "normalized": true,
+  "max_text_tokens": 256,
+  "item_mapping_checksum": "6de3a0bfc08f0e72d6e1b3c9e6c2c89fae653d2dc5b7359034cfdd930ce162dd",
+  "embedding_file": "data/processed/beauty/item_semantic_embeddings.fp16.npy"
+}

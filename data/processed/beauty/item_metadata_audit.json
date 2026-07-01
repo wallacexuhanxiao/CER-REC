@@ -1,0 +1,14 @@
+{
+  "num_items": 12101,
+  "metadata_file": "data/raw/meta_Beauty.json.gz",
+  "title_ratio": 0.9994215354102967,
+  "category_ratio": 1.0,
+  "brand_ratio": 0.826625898686059,
+  "description_ratio": 0.9224031071812246,
+  "no_text_count": 0,
+  "avg_text_length": 94.31848607553094,
+  "overlong_text_ratio": 0.059747128336501115,
+  "max_text_tokens": 256,
+  "missing_metadata_count": 0,
+  "missing_metadata_raw_item_ids": []
+}
