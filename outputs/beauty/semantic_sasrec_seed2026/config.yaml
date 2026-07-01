@@ -1,0 +1,16 @@
+data_dir: data/processed/beauty
+embedding_path: data/processed/beauty/item_semantic_embeddings.fp16.npy
+output_dir: outputs/beauty/semantic_sasrec_seed2026
+seed: 2026
+hidden_dim: 64
+projection_hidden_dim: 256
+max_history_length: 50
+num_layers: 2
+num_heads: 2
+dropout: 0.2
+batch_size: 256
+eval_batch_size: 4096
+learning_rate: 0.001
+weight_decay: 1e-05
+early_stop_patience: 10
+max_epochs: 200

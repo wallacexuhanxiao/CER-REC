@@ -1,0 +1,17 @@
+{
+  "seed": 2026,
+  "device": "cuda",
+  "best_epoch": 14,
+  "best_validation_NDCG@10": 0.33117061131090003,
+  "validation_HR@10": 0.5330232974109019,
+  "validation_NDCG@10": 0.33117061131090003,
+  "test_HR@10": 0.5011849930689085,
+  "test_NDCG@10": 0.29909025258133043,
+  "semantic_embedding_frozen": true,
+  "embedding_checksum_before": "2e859307e60c0b4acddaa239e12f10f09b8fc1c9ef86c0a1df260be069a3b41d",
+  "embedding_checksum_after": "2e859307e60c0b4acddaa239e12f10f09b8fc1c9ef86c0a1df260be069a3b41d",
+  "projected_variance": 0.10364536941051483,
+  "projected_norm_mean": 2.4923019409179688,
+  "projected_norm_max": 5.178169250488281,
+  "projected_pairwise_std": 0.2606700658798218
+}
