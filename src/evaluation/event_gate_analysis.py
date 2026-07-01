@@ -38,7 +38,7 @@ def recovery(scores, cf_scores, sem_scores):
     }
 
 
-def gate_stats(gates, masks, cf_scores, sem_scores, target_items, train_pop):
+def route_stats(gates, masks, branch_mass, cf_scores, sem_scores, target_items, train_pop):
     cf_hits = ranks_from_scores(cf_scores) <= 10
     sem_hits = ranks_from_scores(sem_scores) <= 10
     cf_only = cf_hits & ~sem_hits
@@ -46,8 +46,9 @@ def gate_stats(gates, masks, cf_scores, sem_scores, target_items, train_pop):
     both = cf_hits & sem_hits
     wrong = ~cf_hits & ~sem_hits
     valid = masks.astype(bool)
-    flat = gates[valid]
-    target_mean = (gates * valid).sum(axis=1) / np.maximum(1, valid.sum(axis=1))
+    flat_gate = gates[valid]
+    raw_gate_mean = (gates * valid).sum(axis=1) / np.maximum(1, valid.sum(axis=1))
+    cf_mass = branch_mass
     freqs = np.asarray([train_pop.get(int(item), 0) for item in target_items])
     order = np.argsort(freqs, kind="stable")
     n = len(freqs)
@@ -56,21 +57,33 @@ def gate_stats(gates, masks, cf_scores, sem_scores, target_items, train_pop):
         "Mid": order[n // 3 : (2 * n) // 3],
         "Head": order[(2 * n) // 3 :],
     }
+
+    def maybe_mean(values, mask):
+        return float(values[mask].mean()) if np.any(mask) else None
+
     result = {
-        "mean_gate": float(flat.mean()),
-        "std_gate": float(flat.std()),
-        "p10": float(np.quantile(flat, 0.10)),
-        "p25": float(np.quantile(flat, 0.25)),
-        "p50": float(np.quantile(flat, 0.50)),
-        "p75": float(np.quantile(flat, 0.75)),
-        "p90": float(np.quantile(flat, 0.90)),
-        "CF-only_mean_gate": float(target_mean[cf_only].mean()) if np.any(cf_only) else None,
-        "Semantic-only_mean_gate": float(target_mean[sem_only].mean()) if np.any(sem_only) else None,
-        "Both-correct_mean_gate": float(target_mean[both].mean()) if np.any(both) else None,
-        "Both-wrong_mean_gate": float(target_mean[wrong].mean()) if np.any(wrong) else None,
+        "cf_branch_mass_mean": float(cf_mass.mean()),
+        "cf_branch_mass_std": float(cf_mass.std()),
+        "cf_branch_mass_p10": float(np.quantile(cf_mass, 0.10)),
+        "cf_branch_mass_p25": float(np.quantile(cf_mass, 0.25)),
+        "cf_branch_mass_p50": float(np.quantile(cf_mass, 0.50)),
+        "cf_branch_mass_p75": float(np.quantile(cf_mass, 0.75)),
+        "cf_branch_mass_p90": float(np.quantile(cf_mass, 0.90)),
+        "CF-only_cf_branch_mass": maybe_mean(cf_mass, cf_only),
+        "Semantic-only_cf_branch_mass": maybe_mean(cf_mass, sem_only),
+        "Both-correct_cf_branch_mass": maybe_mean(cf_mass, both),
+        "Both-wrong_cf_branch_mass": maybe_mean(cf_mass, wrong),
+        "raw_gate_mean": float(flat_gate.mean()),
+        "raw_gate_std": float(flat_gate.std()),
+        "raw_gate_p10": float(np.quantile(flat_gate, 0.10)),
+        "raw_gate_p50": float(np.quantile(flat_gate, 0.50)),
+        "raw_gate_p90": float(np.quantile(flat_gate, 0.90)),
+        "CF-only_raw_gate": maybe_mean(raw_gate_mean, cf_only),
+        "Semantic-only_raw_gate": maybe_mean(raw_gate_mean, sem_only),
     }
     for name, idx in buckets.items():
-        result[f"{name}_mean_gate"] = float(target_mean[idx].mean())
+        result[f"{name}_cf_branch_mass"] = float(cf_mass[idx].mean())
+        result[f"{name}_raw_gate"] = float(raw_gate_mean[idx].mean())
     return result
 
 
@@ -103,10 +116,14 @@ def main():
         model_dir = event_dir / name
         scores = np.load(model_dir / "test_scores.npy")
         metrics = recovery(scores, cf_scores, sem_scores)
-        if (model_dir / "target_event_gates.npy").exists():
+        if (model_dir / "target_event_gates.npy").exists() and (model_dir / "target_branch_masses.npy").exists():
             gates = np.load(model_dir / "target_event_gates.npy")
             masks = np.load(model_dir / "history_masks.npy")
-            metrics["gate_stats"] = gate_stats(gates, masks, cf_scores, sem_scores, candidate_ids[:, 0], train_pop)
+            branch_mass = np.load(model_dir / "target_branch_masses.npy")
+            metrics["route_stats"] = route_stats(
+                gates, branch_mass=branch_mass, masks=masks, cf_scores=cf_scores,
+                sem_scores=sem_scores, target_items=candidate_ids[:, 0], train_pop=train_pop
+            )
         report["EventModels"][label] = metrics
     output_path = event_dir / "event_gate_analysis.json"
     output_path.write_text(json.dumps(report, indent=2), encoding="utf-8")
