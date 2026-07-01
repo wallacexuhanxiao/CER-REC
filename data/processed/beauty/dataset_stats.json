@@ -1,0 +1,21 @@
+{
+  "dataset": "Amazon Beauty",
+  "source": "amazon_2014_ratings_fallback_llm_esr_style_cold_start_filter",
+  "raw_file": "data/raw/ratings_Beauty.csv",
+  "split": "leave-one-out by timestamp",
+  "validation": "second-to-last item",
+  "test": "last item",
+  "num_test_negatives": 100,
+  "negative_seed_valid": 2043,
+  "negative_seed_test": 2055,
+  "num_users": 22363,
+  "num_items": 12101,
+  "num_interactions": 198502,
+  "num_train_interactions": 153776,
+  "avg_sequence_length": 6.8763582703572865,
+  "median_sequence_length": 4,
+  "max_sequence_length": 202,
+  "min_user_interactions": 5,
+  "min_item_interactions": 5,
+  "rating_threshold": null
+}

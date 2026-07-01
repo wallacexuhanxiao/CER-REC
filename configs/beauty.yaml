@@ -1,0 +1,21 @@
+dataset: beauty
+seed: 2026
+max_history_length: 50
+num_negatives: 100
+min_user_interactions: 5
+min_item_interactions: 5
+source_priority:
+  - llm_esr_processed
+  - hsuga_processed
+  - amazon_2014_ratings
+sasrec:
+  hidden_dim: 64
+  num_layers: 2
+  num_heads: 2
+  dropout: 0.2
+  batch_size: 256
+  learning_rate: 0.001
+  weight_decay: 0.00001
+  train_negatives: 1
+  early_stop_patience: 10
+  max_epochs: 200
