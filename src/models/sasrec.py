@@ -8,6 +8,7 @@ class SASRec(nn.Module):
         self.num_items = num_items
         self.hidden_dim = hidden_dim
         self.max_history_length = max_history_length
+        self.num_heads = num_heads
         self.item_embedding = nn.Embedding(num_items + 1, hidden_dim, padding_idx=0)
         self.position_embedding = nn.Embedding(max_history_length, hidden_dim)
         encoder_layer = nn.TransformerEncoderLayer(
@@ -25,15 +26,21 @@ class SASRec(nn.Module):
 
     def encode(self, seq):
         batch_size, seq_len = seq.shape
-        positions = torch.arange(seq_len, device=seq.device).unsqueeze(0).expand(batch_size, -1)
+        positions = seq.ne(0).long().cumsum(dim=1).sub(1).clamp_min(0)
         x = self.item_embedding(seq) + self.position_embedding(positions)
         x = x.masked_fill(seq.eq(0).unsqueeze(-1), 0.0)
         x = self.dropout(x)
         causal_mask = torch.triu(
             torch.ones(seq_len, seq_len, device=seq.device, dtype=torch.bool),
             diagonal=1,
-        )
-        out = self.encoder(x, mask=causal_mask)
+        ).unsqueeze(0).expand(batch_size, -1, -1)
+        key_padding_mask = seq.eq(0).unsqueeze(1).expand(-1, seq_len, -1)
+        attention_mask = causal_mask | key_padding_mask
+        pad_queries = seq.eq(0)
+        diagonal = torch.eye(seq_len, device=seq.device, dtype=torch.bool).unsqueeze(0)
+        attention_mask = torch.where(pad_queries.unsqueeze(-1) & diagonal, False, attention_mask)
+        attention_mask = attention_mask.repeat_interleave(self.num_heads, dim=0)
+        out = self.encoder(x, mask=attention_mask)
         out = out.masked_fill(seq.eq(0).unsqueeze(-1), 0.0)
         out = self.layer_norm(out)
         out = out.masked_fill(seq.eq(0).unsqueeze(-1), 0.0)
