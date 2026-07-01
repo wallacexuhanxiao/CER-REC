@@ -2,18 +2,18 @@
   "num_samples": 22363,
   "cf_HR@10": 0.28341456870723963,
   "cf_NDCG@10": 0.1492401216931876,
-  "semantic_HR@10": 0.5011849930689085,
-  "semantic_NDCG@10": 0.29909025258132804,
-  "both_correct": 5034,
-  "cf_only_correct": 1304,
-  "semantic_only_correct": 6174,
-  "both_wrong": 9851,
-  "cf_only_ratio": 0.058310602334212765,
-  "semantic_only_ratio": 0.2760810266958816,
-  "oracle_HR@10": 0.5594955954031212,
-  "oracle_NDCG@10": 0.33714519286147343,
-  "oracle_gain_over_cf_HR@10": 0.2760810266958816,
-  "oracle_gain_over_cf_NDCG@10": 0.18790507116828584,
+  "semantic_HR@10": 0.5013638599472343,
+  "semantic_NDCG@10": 0.29871559842540657,
+  "both_correct": 5106,
+  "cf_only_correct": 1232,
+  "semantic_only_correct": 6106,
+  "both_wrong": 9919,
+  "cf_only_ratio": 0.055090998524348254,
+  "semantic_only_ratio": 0.2730402897643429,
+  "oracle_HR@10": 0.5564548584715825,
+  "oracle_NDCG@10": 0.33434676377631073,
+  "oracle_gain_over_cf_HR@10": 0.27304028976434286,
+  "oracle_gain_over_cf_NDCG@10": 0.18510664208312314,
   "bucket_table": [
     {
       "bucket_type": "target_popularity",
@@ -21,12 +21,12 @@
       "num_samples": 7454,
       "cf_HR@10": 0.07150523209015294,
       "cf_NDCG@10": 0.024304103037371207,
-      "semantic_HR@10": 0.45519184330560775,
-      "semantic_NDCG@10": 0.24043816126142287,
-      "cf_only": 205,
-      "semantic_only": 3065,
-      "cf_only_ratio": 0.027502012342366513,
-      "semantic_only_ratio": 0.4111886235578213
+      "semantic_HR@10": 0.4453984437885699,
+      "semantic_NDCG@10": 0.23178106053718955,
+      "cf_only": 211,
+      "semantic_only": 2998,
+      "cf_only_ratio": 0.028306949288972365,
+      "semantic_only_ratio": 0.4022001609873893
     },
     {
       "bucket_type": "target_popularity",
@@ -34,12 +34,12 @@
       "num_samples": 7455,
       "cf_HR@10": 0.7766599597585513,
       "cf_NDCG@10": 0.42268240023347997,
-      "semantic_HR@10": 0.7710261569416499,
-      "semantic_NDCG@10": 0.5240240697163827,
-      "cf_only": 1089,
-      "semantic_only": 1047,
-      "cf_only_ratio": 0.1460764587525151,
-      "semantic_only_ratio": 0.14044265593561367
+      "semantic_HR@10": 0.7851106639839034,
+      "semantic_NDCG@10": 0.5353638969064604,
+      "cf_only": 1011,
+      "semantic_only": 1074,
+      "cf_only_ratio": 0.13561368209255534,
+      "semantic_only_ratio": 0.14406438631790744
     },
     {
       "bucket_type": "target_popularity",
@@ -47,12 +47,12 @@
       "num_samples": 7454,
       "cf_HR@10": 0.002012342366514623,
       "cf_NDCG@10": 0.0006971778432514045,
-      "semantic_HR@10": 0.2773007781057151,
-      "semantic_NDCG@10": 0.13277835050951967,
+      "semantic_HR@10": 0.2735444056882211,
+      "semantic_NDCG@10": 0.12897009000610327,
       "cf_only": 10,
-      "semantic_only": 2062,
+      "semantic_only": 2034,
       "cf_only_ratio": 0.0013415615776764154,
-      "semantic_only_ratio": 0.2766299973168768
+      "semantic_only_ratio": 0.2728736248993829
     },
     {
       "bucket_type": "history_length",
@@ -60,12 +60,12 @@
       "num_samples": 7454,
       "cf_HR@10": 0.2764958411591092,
       "cf_NDCG@10": 0.1501735983331272,
-      "semantic_HR@10": 0.466326804400322,
-      "semantic_NDCG@10": 0.27622841124132347,
-      "cf_only": 480,
-      "semantic_only": 1895,
-      "cf_only_ratio": 0.06439495572846794,
-      "semantic_only_ratio": 0.2542259189696807
+      "semantic_HR@10": 0.46431446203380733,
+      "semantic_NDCG@10": 0.27898608754408377,
+      "cf_only": 445,
+      "semantic_only": 1845,
+      "cf_only_ratio": 0.05969949020660048,
+      "semantic_only_ratio": 0.24751811108129862
     },
     {
       "bucket_type": "history_length",
@@ -73,12 +73,12 @@
       "num_samples": 7454,
       "cf_HR@10": 0.27783740273678564,
       "cf_NDCG@10": 0.1471880368294273,
-      "semantic_HR@10": 0.4779983901261068,
-      "semantic_NDCG@10": 0.2832524042306022,
-      "cf_only": 471,
-      "semantic_only": 1963,
-      "cf_only_ratio": 0.06318755030855916,
-      "semantic_only_ratio": 0.26334853769788036
+      "semantic_HR@10": 0.4790716393882479,
+      "semantic_NDCG@10": 0.28241808170784577,
+      "cf_only": 435,
+      "semantic_only": 1935,
+      "cf_only_ratio": 0.05835792862892407,
+      "semantic_only_ratio": 0.25959216528038637
     },
     {
       "bucket_type": "history_length",
@@ -86,12 +86,12 @@
       "num_samples": 7455,
       "cf_HR@10": 0.2959087860496311,
       "cf_NDCG@10": 0.15035857986895673,
-      "semantic_HR@10": 0.5592219986586183,
-      "semantic_NDCG@10": 0.3377847511668014,
-      "cf_only": 353,
-      "semantic_only": 2316,
-      "cf_only_ratio": 0.04735077129443327,
-      "semantic_only_ratio": 0.31066398390342054
+      "semantic_HR@10": 0.5606975184439973,
+      "semantic_NDCG@10": 0.3347377934250146,
+      "cf_only": 352,
+      "semantic_only": 2326,
+      "cf_only_ratio": 0.04721663313212609,
+      "semantic_only_ratio": 0.3120053655264923
     }
   ]
 }

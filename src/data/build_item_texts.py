@@ -2,12 +2,14 @@ import argparse
 import ast
 import gzip
 import json
+import re
 from pathlib import Path
 from urllib.request import urlretrieve
 
 
 META_URL = "http://snap.stanford.edu/data/amazon/productGraph/categoryFiles/meta_Beauty.json.gz"
 FALLBACK_TEXT = "Unknown beauty product"
+ASIN_RE = re.compile(r"\bB[0-9A-Z]{9}\b")
 
 
 def download_metadata(raw_dir: Path) -> Path:
@@ -77,7 +79,8 @@ def build_text(row):
         parts.append(f"Features: {features}")
     if description:
         parts.append(f"Description: {description}")
-    text = "\n".join(parts)
+    text = ASIN_RE.sub("", "\n".join(parts))
+    text = " ".join(text.split())
     return text if text else FALLBACK_TEXT
 
 
@@ -153,4 +156,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-

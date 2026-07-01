@@ -1,0 +1,31 @@
+{
+  "repeat_target_count": 0,
+  "repeat_target_ratio": 0.0,
+  "all": {
+    "num_samples": 22363,
+    "cf_HR@10": 0.28341456870723963,
+    "cf_NDCG@10": 0.1492401216931876,
+    "semantic_HR@10": 0.5013638599472343,
+    "semantic_NDCG@10": 0.29871559842540657,
+    "oracle_HR@10": 0.5564548584715825,
+    "oracle_NDCG@10": 0.33434676377631073
+  },
+  "non_repeat_only": {
+    "num_samples": 22363,
+    "cf_HR@10": 0.28341456870723963,
+    "cf_NDCG@10": 0.1492401216931876,
+    "semantic_HR@10": 0.5013638599472343,
+    "semantic_NDCG@10": 0.29871559842540657,
+    "oracle_HR@10": 0.5564548584715825,
+    "oracle_NDCG@10": 0.33434676377631073
+  },
+  "repeat_only": {
+    "num_samples": 0,
+    "cf_HR@10": null,
+    "cf_NDCG@10": null,
+    "semantic_HR@10": null,
+    "semantic_NDCG@10": null,
+    "oracle_HR@10": null,
+    "oracle_NDCG@10": null
+  }
+}

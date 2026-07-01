@@ -1,0 +1,18 @@
+{
+  "raw_item_id_in_text_count": 0,
+  "asin_pattern_count": 0,
+  "review_marker_count": 0,
+  "rating_marker_count": 0,
+  "interaction_marker_count": 0,
+  "username_marker_count": 0,
+  "num_items": 12101,
+  "allowed_fields": [
+    "Title",
+    "Brand",
+    "Category",
+    "Features",
+    "Description"
+  ],
+  "examples": [],
+  "verdict": "pass"
+}

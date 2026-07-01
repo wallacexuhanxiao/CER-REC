@@ -1,0 +1,14 @@
+{
+  "HR@10": 0.5013638599472343,
+  "NDCG@10": 0.29871559842540657,
+  "CF-Recovery": 0.0,
+  "Semantic-Retention": 1.0,
+  "Oracle-Gap-Capture": 0.0,
+  "mean_gate": 6.555114396178396e-06,
+  "gate_std": 1.768868969520554e-05,
+  "cf_only_mean_gate": 2.6627772058418486e-06,
+  "semantic_only_mean_gate": 1.0255648703605402e-05,
+  "tail_mean_gate": 8.672866897541098e-06,
+  "mid_mean_gate": 4.865471964876633e-06,
+  "head_mean_gate": 6.127060714788968e-06
+}

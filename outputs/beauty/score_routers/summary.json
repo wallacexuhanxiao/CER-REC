@@ -1,0 +1,59 @@
+{
+  "StaticFusion": {
+    "HR@10": 0.49818897285695124,
+    "NDCG@10": 0.29780720204823447,
+    "CF-Recovery": 0.1956168831168831,
+    "Semantic-Retention": 0.9251555846708156,
+    "Oracle-Gap-Capture": -0.05762987012987052,
+    "mean_gate": 0.20000003278255463,
+    "gate_std": 2.9802322387695312e-08,
+    "cf_only_mean_gate": 0.20000001788139343,
+    "semantic_only_mean_gate": 0.20000003278255463,
+    "tail_mean_gate": 0.20000003278255463,
+    "mid_mean_gate": 0.20000003278255463,
+    "head_mean_gate": 0.20000003278255463,
+    "g": 0.2
+  },
+  "UserGate": {
+    "HR@10": 0.5004248088360238,
+    "NDCG@10": 0.2982719860136205,
+    "CF-Recovery": 0.007305194805194805,
+    "Semantic-Retention": 0.9932852931542745,
+    "Oracle-Gap-Capture": -0.01704545454545507,
+    "mean_gate": 0.015917034819722176,
+    "gate_std": 0.03488260880112648,
+    "cf_only_mean_gate": 0.007604575715959072,
+    "semantic_only_mean_gate": 0.023243386298418045,
+    "tail_mean_gate": 0.013218257576227188,
+    "mid_mean_gate": 0.0139268534258008,
+    "head_mean_gate": 0.020605366677045822
+  },
+  "ItemGate": {
+    "HR@10": 0.4967580378303448,
+    "NDCG@10": 0.3031477222701201,
+    "CF-Recovery": 0.10064935064935066,
+    "Semantic-Retention": 0.92368162463151,
+    "Oracle-Gap-Capture": -0.08360389610389676,
+    "mean_gate": 0.08777102082967758,
+    "gate_std": 0.16659428179264069,
+    "cf_only_mean_gate": 0.054497651755809784,
+    "semantic_only_mean_gate": 0.09544912725687027,
+    "tail_mean_gate": 0.1660015732049942,
+    "mid_mean_gate": 0.04992600157856941,
+    "head_mean_gate": 0.047390904277563095
+  },
+  "UserTargetGate": {
+    "HR@10": 0.5013638599472343,
+    "NDCG@10": 0.29871559842540657,
+    "CF-Recovery": 0.0,
+    "Semantic-Retention": 1.0,
+    "Oracle-Gap-Capture": 0.0,
+    "mean_gate": 6.555114396178396e-06,
+    "gate_std": 1.768868969520554e-05,
+    "cf_only_mean_gate": 2.6627772058418486e-06,
+    "semantic_only_mean_gate": 1.0255648703605402e-05,
+    "tail_mean_gate": 8.672866897541098e-06,
+    "mid_mean_gate": 4.865471964876633e-06,
+    "head_mean_gate": 6.127060714788968e-06
+  }
+}

@@ -1,0 +1,32 @@
+{
+  "frequency_source": "train_item_popularity.pkl",
+  "buckets": [
+    {
+      "bucket": "Tail",
+      "num_items": 4033,
+      "num_test_samples": 7454,
+      "avg_train_frequency_items": 3.701462930820729,
+      "avg_train_frequency_test_targets": 3.800107324926214,
+      "min_train_frequency_test_targets": 0,
+      "max_train_frequency_test_targets": 7
+    },
+    {
+      "bucket": "Mid",
+      "num_items": 4034,
+      "num_test_samples": 7454,
+      "avg_train_frequency_items": 6.739712444224095,
+      "avg_train_frequency_test_targets": 12.49771934531795,
+      "min_train_frequency_test_targets": 7,
+      "max_train_frequency_test_targets": 22
+    },
+    {
+      "bucket": "Head",
+      "num_items": 4034,
+      "num_test_samples": 7455,
+      "avg_train_frequency_items": 27.679722359940506,
+      "avg_train_frequency_test_targets": 68.09309188464118,
+      "min_train_frequency_test_targets": 22,
+      "max_train_frequency_test_targets": 369
+    }
+  ]
+}

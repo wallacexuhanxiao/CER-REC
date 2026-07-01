@@ -1,0 +1,14 @@
+{
+  "num_samples": 22363,
+  "cf_HR@10": 0.24884854447077762,
+  "cf_NDCG@10": 0.12710856787221136,
+  "semantic_HR@10": 0.32075302955775165,
+  "semantic_NDCG@10": 0.16341099543725862,
+  "both_correct": 4087,
+  "cf_only_correct": 1478,
+  "semantic_only_correct": 3086,
+  "both_wrong": 13712,
+  "semantic_only_ratio": 0.13799579662835934,
+  "oracle_HR@10": 0.38684434109913696,
+  "oracle_NDCG@10": 0.20425519531925504
+}
