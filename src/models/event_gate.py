@@ -90,13 +90,15 @@ class DualEventFusion(nn.Module):
 
         gated_cf = gate * alpha_cf
         gated_sem = (1.0 - gate) * alpha_sem
-        norm_cf = gated_cf / (gated_cf.sum(dim=-1, keepdim=True) + self.eps)
-        norm_sem = gated_sem / (gated_sem.sum(dim=-1, keepdim=True) + self.eps)
+        joint_mass = gated_cf.sum(dim=-1, keepdim=True) + gated_sem.sum(dim=-1, keepdim=True) + self.eps
+        norm_cf = gated_cf / joint_mass
+        norm_sem = gated_sem / joint_mass
+        cf_branch_mass = norm_cf.sum(dim=-1)
         pooled_cf = torch.einsum("bcl,bld->bcd", norm_cf, cf_states)
         pooled_sem = torch.einsum("bcl,bld->bcd", norm_sem, sem_states)
         score_cf = (pooled_cf * cf_candidates).sum(dim=-1) / cf_temperature
         score_sem = (pooled_sem * sem_candidates).sum(dim=-1) / sem_temperature
-        return score_cf + score_sem, gate
+        return score_cf + score_sem, gate, cf_branch_mass
 
     def forward(
         self,
@@ -112,10 +114,10 @@ class DualEventFusion(nn.Module):
         cf_temperature,
         sem_temperature,
     ):
-        scores, gates = [], []
+        scores, gates, branch_masses = [], [], []
         for start in range(0, cf_candidates.shape[1], self.candidate_chunk_size):
             end = min(cf_candidates.shape[1], start + self.candidate_chunk_size)
-            chunk_scores, chunk_gates = self._score_chunk(
+            chunk_scores, chunk_gates, chunk_branch_masses = self._score_chunk(
                 cf_states,
                 sem_states,
                 cf_candidates[:, start:end],
@@ -130,5 +132,6 @@ class DualEventFusion(nn.Module):
             )
             scores.append(chunk_scores)
             gates.append(chunk_gates)
-        return torch.cat(scores, dim=1), torch.cat(gates, dim=1)
+            branch_masses.append(chunk_branch_masses)
+        return torch.cat(scores, dim=1), torch.cat(gates, dim=1), torch.cat(branch_masses, dim=1)
 

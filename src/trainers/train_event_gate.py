@@ -108,7 +108,7 @@ def frozen_features(cf_model, sem_model, seq, candidates):
 
 def run_model(model, cf_model, sem_model, loader, freq_tensor, args, device, return_gates=False):
     model.eval()
-    all_scores, all_gate_means, all_gates, all_masks, all_candidates = [], [], [], [], []
+    all_scores, all_gate_means, all_branch_masses, all_gates, all_masks, all_candidates = [], [], [], [], [], []
     with torch.no_grad():
         for seq, candidates, user_lengths in loader:
             seq, candidates, user_lengths = seq.to(device), candidates.to(device), user_lengths.to(device)
@@ -118,7 +118,7 @@ def run_model(model, cf_model, sem_model, loader, freq_tensor, args, device, ret
             hist_freq = freq_tensor[seq]
             user_len = torch.log1p(user_lengths) / np.log(51)
             recency = recency_features(seq)
-            scores, gates = model(
+            scores, gates, branch_masses = model(
                 cf_states,
                 sem_states,
                 cf_candidates,
@@ -135,11 +135,16 @@ def run_model(model, cf_model, sem_model, loader, freq_tensor, args, device, ret
             target_gate = gates[:, 0, :]
             gate_mean = (target_gate * history_mask.float()).sum(dim=1) / history_mask.float().sum(dim=1).clamp_min(1.0)
             all_gate_means.append(gate_mean.cpu().numpy().astype(np.float32))
+            all_branch_masses.append(branch_masses[:, 0].cpu().numpy().astype(np.float32))
             if return_gates:
                 all_gates.append(target_gate.cpu().numpy().astype(np.float32))
                 all_masks.append(history_mask.cpu().numpy())
                 all_candidates.append(candidates.cpu().numpy().astype(np.int32))
-    result = {"scores": np.vstack(all_scores), "target_gate_mean": np.concatenate(all_gate_means)}
+    result = {
+        "scores": np.vstack(all_scores),
+        "target_gate_mean": np.concatenate(all_gate_means),
+        "target_branch_mass": np.concatenate(all_branch_masses),
+    }
     if return_gates:
         result["target_event_gates"] = np.vstack(all_gates)
         result["history_masks"] = np.vstack(all_masks)
@@ -201,7 +206,7 @@ def train_one(args, route_mode):
             with torch.no_grad():
                 cf_states, sem_states, cf_candidates, sem_candidates = frozen_features(cf_model, sem_model, seq, candidates)
             history_mask = seq.ne(0)
-            scores, _ = model(
+            scores, _, _ = model(
                 cf_states,
                 sem_states,
                 cf_candidates,
@@ -247,6 +252,7 @@ def train_one(args, route_mode):
     (output_dir / "train_log.jsonl").write_text("\n".join(json.dumps(x) for x in logs) + "\n")
     np.save(output_dir / "test_scores.npy", test_output["scores"])
     np.save(output_dir / "target_event_gates.npy", test_output["target_event_gates"])
+    np.save(output_dir / "target_branch_masses.npy", test_output["target_branch_mass"])
     np.save(output_dir / "history_masks.npy", test_output["history_masks"])
     save_json(output_dir / "metrics.json", metrics)
     print(json.dumps(metrics, indent=2), flush=True)
