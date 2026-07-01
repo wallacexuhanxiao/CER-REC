@@ -1,0 +1,127 @@
+{
+  "CF": {
+    "HR@10": 0.28341456870723963,
+    "NDCG@10": 0.1492401216931876,
+    "CF-Recovery": 1.0,
+    "Semantic-Retention": 0.0,
+    "Oracle-Gap-Capture": -3.9561688311688377
+  },
+  "Semantic-only": {
+    "HR@10": 0.5013638599472343,
+    "NDCG@10": 0.29871559842540657,
+    "CF-Recovery": 0.0,
+    "Semantic-Retention": 1.0,
+    "Oracle-Gap-Capture": 0.0
+  },
+  "Oracle": {
+    "HR@10": 0.5564548584715825,
+    "NDCG@10": 0.33434676377631073
+  },
+  "ScoreRouters": {
+    "StaticFusion": {
+      "HR@10": 0.49818897285695124,
+      "NDCG@10": 0.29780720204823447,
+      "CF-Recovery": 0.1956168831168831,
+      "Semantic-Retention": 0.9251555846708156,
+      "Oracle-Gap-Capture": -0.05762987012987052,
+      "mean_gate": 0.20000003278255463,
+      "gate_std": 2.9802322387695312e-08,
+      "cf_only_mean_gate": 0.20000001788139343,
+      "semantic_only_mean_gate": 0.20000003278255463,
+      "tail_mean_gate": 0.20000003278255463,
+      "mid_mean_gate": 0.20000003278255463,
+      "head_mean_gate": 0.20000003278255463,
+      "g": 0.2
+    },
+    "UserGate": {
+      "HR@10": 0.5004248088360238,
+      "NDCG@10": 0.2982719860136205,
+      "CF-Recovery": 0.007305194805194805,
+      "Semantic-Retention": 0.9932852931542745,
+      "Oracle-Gap-Capture": -0.01704545454545507,
+      "mean_gate": 0.015917034819722176,
+      "gate_std": 0.03488260880112648,
+      "cf_only_mean_gate": 0.007604575715959072,
+      "semantic_only_mean_gate": 0.023243386298418045,
+      "tail_mean_gate": 0.013218257576227188,
+      "mid_mean_gate": 0.0139268534258008,
+      "head_mean_gate": 0.020605366677045822
+    },
+    "ItemGate": {
+      "HR@10": 0.4967580378303448,
+      "NDCG@10": 0.3031477222701201,
+      "CF-Recovery": 0.10064935064935066,
+      "Semantic-Retention": 0.92368162463151,
+      "Oracle-Gap-Capture": -0.08360389610389676,
+      "mean_gate": 0.08777102082967758,
+      "gate_std": 0.16659428179264069,
+      "cf_only_mean_gate": 0.054497651755809784,
+      "semantic_only_mean_gate": 0.09544912725687027,
+      "tail_mean_gate": 0.1660015732049942,
+      "mid_mean_gate": 0.04992600157856941,
+      "head_mean_gate": 0.047390904277563095
+    },
+    "UserTargetGate": {
+      "HR@10": 0.5013638599472343,
+      "NDCG@10": 0.29871559842540657,
+      "CF-Recovery": 0.0,
+      "Semantic-Retention": 1.0,
+      "Oracle-Gap-Capture": 0.0,
+      "mean_gate": 6.555114396178396e-06,
+      "gate_std": 1.768868969520554e-05,
+      "cf_only_mean_gate": 2.6627772058418486e-06,
+      "semantic_only_mean_gate": 1.0255648703605402e-05,
+      "tail_mean_gate": 8.672866897541098e-06,
+      "mid_mean_gate": 4.865471964876633e-06,
+      "head_mean_gate": 6.127060714788968e-06
+    }
+  },
+  "EventModels": {
+    "DualEvent-NoRoute": {
+      "HR@10": 0.4891114787819166,
+      "NDCG@10": 0.29333392677419723,
+      "CF-Recovery": 0.4650974025974026,
+      "Semantic-Retention": 0.7903701277432034,
+      "Oracle-Gap-Capture": -0.22240259740259818,
+      "gate_stats": {
+        "mean_gate": 0.5,
+        "std_gate": 0.0,
+        "p10": 0.5,
+        "p25": 0.5,
+        "p50": 0.5,
+        "p75": 0.5,
+        "p90": 0.5,
+        "CF-only_mean_gate": 0.5,
+        "Semantic-only_mean_gate": 0.5,
+        "Both-correct_mean_gate": 0.5,
+        "Both-wrong_mean_gate": 0.5,
+        "Tail_mean_gate": 0.5,
+        "Mid_mean_gate": 0.5,
+        "Head_mean_gate": 0.5
+      }
+    },
+    "EventGate-NoTeacher": {
+      "HR@10": 0.4790949335956714,
+      "NDCG@10": 0.2860600915310793,
+      "CF-Recovery": 0.5422077922077922,
+      "Semantic-Retention": 0.7523747133966591,
+      "Oracle-Gap-Capture": -0.4042207792207809,
+      "gate_stats": {
+        "mean_gate": 0.9519553780555725,
+        "std_gate": 0.1234438568353653,
+        "p10": 0.8524261116981506,
+        "p25": 0.9778231382369995,
+        "p50": 0.9990746974945068,
+        "p75": 0.9999947547912598,
+        "p90": 1.0,
+        "CF-only_mean_gate": 0.9706069046040185,
+        "Semantic-only_mean_gate": 0.9708261459828021,
+        "Both-correct_mean_gate": 0.9601879824779669,
+        "Both-wrong_mean_gate": 0.9863436511029968,
+        "Tail_mean_gate": 0.9826106735283081,
+        "Mid_mean_gate": 0.9789034386569457,
+        "Head_mean_gate": 0.9642908753101789
+      }
+    }
+  }
+}

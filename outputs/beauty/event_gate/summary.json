@@ -1,0 +1,14 @@
+{
+  "fixed_half": {
+    "route_mode": "fixed_half",
+    "best_epoch": 63,
+    "HR@10": 0.4891114787819166,
+    "NDCG@10": 0.29333392677419723
+  },
+  "learned": {
+    "route_mode": "learned",
+    "best_epoch": 4,
+    "HR@10": 0.4790949335956714,
+    "NDCG@10": 0.2860600915310793
+  }
+}

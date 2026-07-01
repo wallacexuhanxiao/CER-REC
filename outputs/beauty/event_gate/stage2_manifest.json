@@ -1,0 +1,18 @@
+{
+  "cf_checkpoint": "outputs/beauty/sasrec_seed2026/best.pt",
+  "semantic_checkpoint": "outputs/beauty/semantic_sasrec_seed2026/best.pt",
+  "semantic_embedding_path": "data/processed/beauty/item_semantic_embeddings.fp16.npy",
+  "data_dir": "data/processed/beauty",
+  "cf_temperature": 1.5190560817718506,
+  "semantic_temperature": 1.35512113571167,
+  "checksums": {
+    "cf_checkpoint": "c46532843b3f299e3bfc615f3e9d613aa15bec8de35b67a9f8c271aedd185116",
+    "semantic_checkpoint": "3019e4edbe8473e748170b8960bac52abf93bf70275feced7091e6c69476810c",
+    "semantic_embedding": "1f1339edf14fadd71ca158334cc6bf77b90cacc44b1dbc52df7db05e41339362",
+    "train": "bf555c03744adaa059f0b46f0754d4d831e38acc89f8e0a932344b074105731f",
+    "valid": "510cc5934fc77d172ee607dab69c689298a52018c7897ca07d94bbc0689fa432",
+    "test": "ee14420df8495c5c9572027cec4659904e7423411a3c640e316fc178c56ef268",
+    "valid_negatives": "b4714641bb552d7ee867caa81a83bebd5f666bbf9820bf8fa0a8e66a1949c679",
+    "test_negatives": "17a706d8c6720f5ce9ae268b2ae394b28237ff332d914d3fa6e70ef52b9828d4"
+  }
+}
