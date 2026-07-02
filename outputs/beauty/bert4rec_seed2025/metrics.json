@@ -1,0 +1,11 @@
+{
+  "model": "BERT4Rec",
+  "seed": 2025,
+  "device": "cuda",
+  "best_epoch": 67,
+  "best_validation_NDCG@10": 0.21711757238176965,
+  "validation_HR@10": 0.36453069802799265,
+  "validation_NDCG@10": 0.21711757238176965,
+  "test_HR@10": 0.3154317399275589,
+  "test_NDCG@10": 0.1793407432213076
+}

@@ -1,0 +1,16 @@
+{
+  "dataset": "Amazon Beauty",
+  "seeds": [
+    2024,
+    2025,
+    2026
+  ],
+  "generated_files": [
+    "main_results_summary.csv",
+    "main_results_summary.md",
+    "main_results_by_seed.csv",
+    "ablation_results_summary.csv",
+    "ablation_results_summary.md",
+    "ablation_results_by_seed.csv"
+  ]
+}

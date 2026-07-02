@@ -1,0 +1,16 @@
+{
+  "data_dir": "data/processed/beauty",
+  "output_dir": "outputs/beauty/gru4rec_seed2025",
+  "seed": 2025,
+  "hidden_dim": 64,
+  "max_history_length": 50,
+  "num_layers": 1,
+  "dropout": 0.2,
+  "batch_size": 256,
+  "learning_rate": 0.001,
+  "weight_decay": 1e-05,
+  "train_negatives": 1,
+  "early_stop_patience": 10,
+  "max_epochs": 200,
+  "eval_batch_size": 4096
+}

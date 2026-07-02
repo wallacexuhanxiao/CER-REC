@@ -1,0 +1,11 @@
+{
+  "model": "GRU4Rec",
+  "seed": 2024,
+  "device": "cuda",
+  "best_epoch": 36,
+  "best_validation_NDCG@10": 0.17848796966608507,
+  "validation_HR@10": 0.3275499709341323,
+  "validation_NDCG@10": 0.17848796966608507,
+  "test_HR@10": 0.2805974153736082,
+  "test_NDCG@10": 0.14898390195813954
+}
