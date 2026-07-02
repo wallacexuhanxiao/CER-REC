@@ -20,7 +20,7 @@ processed_dir="data/processed/${dataset}"
   --min-item-interactions 5 \
   --user-field user_id \
   --item-field "$item_field" \
-  --timestamp-field sort_timestamp \
+  --timestamp-field timestamp \
   --rating-field rating
 
 "$PYTHON_BIN" -m src.data.build_amazon_item_texts \
