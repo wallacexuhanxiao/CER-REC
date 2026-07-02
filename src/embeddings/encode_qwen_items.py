@@ -1,9 +1,26 @@
 import argparse
 import hashlib
 import json
+import os
 from pathlib import Path
 
 import numpy as np
+
+
+def cached_hf_snapshot(model_id: str):
+    cache_root = Path(os.environ.get("HF_HOME", Path.home() / ".cache" / "huggingface")) / "hub"
+    model_dir = cache_root / f"models--{model_id.replace('/', '--')}"
+    refs_main = model_dir / "refs" / "main"
+    if refs_main.exists():
+        snapshot = model_dir / "snapshots" / refs_main.read_text(encoding="utf-8").strip()
+        if snapshot.exists():
+            return snapshot
+    snapshots = model_dir / "snapshots"
+    if snapshots.exists():
+        candidates = sorted([p for p in snapshots.iterdir() if p.is_dir()], key=lambda p: p.stat().st_mtime, reverse=True)
+        if candidates:
+            return candidates[0]
+    return None
 
 
 def file_sha256(path: Path):
@@ -33,7 +50,12 @@ def main():
         assert row["item_id"] == expected_id
 
     texts = [row["text"] for row in rows]
-    model = SentenceTransformer(args.model, trust_remote_code=True)
+    model_source = args.model
+    cached_snapshot = cached_hf_snapshot(args.model) if "/" in args.model and not Path(args.model).exists() else None
+    if cached_snapshot is not None:
+        model_source = str(cached_snapshot)
+        print(f"Using cached HuggingFace snapshot: {model_source}", flush=True)
+    model = SentenceTransformer(model_source, trust_remote_code=True)
     embeddings = model.encode(
         texts,
         batch_size=args.batch_size,
@@ -51,6 +73,7 @@ def main():
     meta = {
         "model": "Qwen3-Embedding-0.6B",
         "model_id": args.model,
+        "model_source": model_source,
         "num_items": stats["num_items"],
         "embedding_dim": int(embeddings.shape[1]),
         "dtype": "float16",
@@ -72,4 +95,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
