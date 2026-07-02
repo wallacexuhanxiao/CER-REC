@@ -91,5 +91,26 @@
     }
   },
   "best_by_hr": "0.3",
-  "best_by_ndcg": "0.1"
+  "best_by_ndcg": "0.1",
+  "EventGate-CFTeacher-WarmStart": {
+    "init_checkpoint": "outputs/beauty/event_gate/learned/best.pt",
+    "lambda_route": 0.3,
+    "learning_rate": 0.0001,
+    "max_epochs": 30,
+    "early_stop_patience": 8,
+    "train_route_gate_only": true,
+    "freeze_event_relation": true,
+    "HR@10": 0.49724992174574073,
+    "NDCG@10": 0.3039462866382964,
+    "CF-Recovery": 0.3538961038961039,
+    "Semantic-Retention": 0.8457255158860137,
+    "Oracle-Gap-Capture": -0.07467532467532559,
+    "CF-only_cf_branch_mass": 0.25269079208374023,
+    "Semantic-only_cf_branch_mass": 0.30974483489990234,
+    "cf_mass_direction_correct": false,
+    "overall_cf_branch_mass": 0.293800950050354,
+    "Tail_cf_branch_mass": 0.3060204088687897,
+    "Mid_cf_branch_mass": 0.2785879075527191,
+    "Head_cf_branch_mass": 0.2967941164970398
+  }
 }

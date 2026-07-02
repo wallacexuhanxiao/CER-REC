@@ -211,7 +211,21 @@ def train_one(args, route_mode):
         route_mode=route_mode,
         candidate_chunk_size=args.candidate_chunk_size,
     ).to(device)
-    optimizer = torch.optim.AdamW(model.parameters(), lr=args.learning_rate, weight_decay=args.weight_decay)
+    if args.init_checkpoint:
+        checkpoint = torch.load(args.init_checkpoint, map_location=device)
+        model.load_state_dict(checkpoint["model"])
+    if args.freeze_event_relation or args.train_route_gate_only:
+        for param in model.cf_relation.parameters():
+            param.requires_grad_(False)
+        for param in model.semantic_relation.parameters():
+            param.requires_grad_(False)
+    if args.train_route_gate_only:
+        for name, param in model.named_parameters():
+            param.requires_grad_(name.startswith("route_gate."))
+    trainable_params = [param for param in model.parameters() if param.requires_grad]
+    if not trainable_params:
+        raise ValueError("no trainable parameters left for event gate training")
+    optimizer = torch.optim.AdamW(trainable_params, lr=args.learning_rate, weight_decay=args.weight_decay)
 
     best_ndcg, best_state, best_epoch, patience = -1.0, None, 0, 0
     logs = []
@@ -285,6 +299,9 @@ def train_one(args, route_mode):
         "route_mode": route_mode,
         "lambda_route": args.lambda_route,
         "route_teacher_dir": args.route_teacher_dir,
+        "init_checkpoint": args.init_checkpoint,
+        "freeze_event_relation": args.freeze_event_relation,
+        "train_route_gate_only": args.train_route_gate_only,
         "best_epoch": best_epoch,
         "HR@10": hr,
         "NDCG@10": ndcg,
@@ -346,6 +363,9 @@ def main():
     parser.add_argument("--cf-temperature", type=float, default=1.5190560817718506)
     parser.add_argument("--route-teacher-dir", default=None)
     parser.add_argument("--lambda-route", type=float, default=0.0)
+    parser.add_argument("--init-checkpoint", default=None)
+    parser.add_argument("--freeze-event-relation", action="store_true")
+    parser.add_argument("--train-route-gate-only", action="store_true")
     parser.add_argument("--semantic-temperature", type=float, default=1.35512113571167)
     parser.add_argument("--seed", type=int, default=2026)
     args = parser.parse_args()
