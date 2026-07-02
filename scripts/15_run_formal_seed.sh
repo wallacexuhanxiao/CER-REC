@@ -137,10 +137,7 @@ PY
   --max-prefixes-per-user 5 \
   --train-negatives 32 \
   --batch-size 32 \
-  --candidate-batch-size 33 \
   --max-history-length 50 \
-  --cf-temperature "$cf_temp" \
-  --semantic-temperature "$sem_temp" \
   --seed "$seed"
 
 "$PYTHON_BIN" -m src.trainers.train_event_gate \
