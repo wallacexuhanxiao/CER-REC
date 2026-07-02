@@ -64,9 +64,9 @@ def load_metadata(path: Path, wanted_raw_ids, metadata_format: str, item_id_fiel
 
 def build_text(row, fallback_text: str):
     title = clean_text(row.get("title"))
-    brand = clean_text(row.get("brand") or row.get("store"))
-    category = category_path(row)
-    features = clean_text(row.get("feature") or row.get("features"))
+    brand = clean_text(row.get("brand") or row.get("store") or row.get("developer") or row.get("publisher"))
+    category = category_path(row) or clean_text(row.get("genres"))
+    features = clean_text(row.get("feature") or row.get("features") or row.get("tags") or row.get("specs"))
     description = clean_text(row.get("description"))
     details = clean_text(row.get("details"))
     parts = []
@@ -118,8 +118,8 @@ def main():
             has_text = 0
         else:
             title = clean_text(row.get("title"))
-            brand = clean_text(row.get("brand") or row.get("store"))
-            category = category_path(row)
+            brand = clean_text(row.get("brand") or row.get("store") or row.get("developer") or row.get("publisher"))
+            category = category_path(row) or clean_text(row.get("genres"))
             description = clean_text(row.get("description"))
             title_count += bool(title)
             brand_count += bool(brand)
