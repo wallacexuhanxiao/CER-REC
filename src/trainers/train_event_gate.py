@@ -18,15 +18,20 @@ from src.models.semantic_sasrec import SemanticSASRec
 
 class CandidateDataset(Dataset):
     def __init__(self, split, negatives, max_history_length):
-        self.users = list(split.keys())
+        if isinstance(split, dict):
+            samples = [{"uid": uid, "position": None, **sample} for uid, sample in split.items()]
+            negative_lists = [negatives[sample["uid"]] for sample in samples]
+        else:
+            samples = list(split)
+            negative_lists = list(negatives)
         histories, candidates, user_lengths = [], [], []
-        for uid in self.users:
-            sample = split[uid]
+        for sample, negs in zip(samples, negative_lists):
             full_history = sample["history"]
             history = full_history[-max_history_length:]
             histories.append([0] * (max_history_length - len(history)) + history)
-            candidates.append([sample["target"]] + negatives[uid])
+            candidates.append([sample["target"]] + negs)
             user_lengths.append(len(full_history))
+        self.samples = samples
         self.histories = torch.tensor(histories, dtype=torch.long)
         self.candidates = torch.tensor(candidates, dtype=torch.long)
         self.user_lengths = torch.tensor(user_lengths, dtype=torch.float32)
@@ -65,6 +70,10 @@ def set_seed(seed):
     torch.backends.cudnn.benchmark = False
 
 
+def _negative_pool(all_items, forbidden, target):
+    return [item for item in all_items if item not in forbidden and item != target]
+
+
 def sample_train_candidates(train, valid, test, num_items, num_negatives, seed):
     rng = random.Random(seed)
     all_items = list(range(1, num_items + 1))
@@ -72,11 +81,34 @@ def sample_train_candidates(train, valid, test, num_items, num_negatives, seed):
     for uid, seq in train.items():
         if len(seq) < 2:
             continue
-        split[uid] = {"history": seq[:-1], "target": seq[-1]}
+        target = seq[-1]
+        split[uid] = {"history": seq[:-1], "target": target}
         forbidden = set(seq) | {valid[uid]["target"], test[uid]["target"]}
-        pool = [item for item in all_items if item not in forbidden and item != seq[-1]]
-        negatives[uid] = rng.sample(pool, num_negatives)
+        negatives[uid] = rng.sample(_negative_pool(all_items, forbidden, target), num_negatives)
     return split, negatives
+
+
+def sample_train_prefix_candidates(train, valid, test, num_items, num_negatives, seed, max_prefixes_per_user):
+    all_items = list(range(1, num_items + 1))
+    samples, negatives = [], []
+    for uid, seq in train.items():
+        if len(seq) < 2:
+            continue
+        if max_prefixes_per_user <= 1:
+            positions = [len(seq) - 1]
+        else:
+            positions = np.linspace(1, len(seq) - 1, num=min(max_prefixes_per_user, len(seq) - 1), dtype=int)
+            positions = sorted(set(int(position) for position in positions))
+            if positions[-1] != len(seq) - 1:
+                positions.append(len(seq) - 1)
+        forbidden = set(seq) | {valid[uid]["target"], test[uid]["target"]}
+        for position in positions:
+            target = seq[position]
+            samples.append({"uid": uid, "position": position, "history": seq[:position], "target": target})
+            sample_seed = seed + int(uid) * 1000003 + int(position)
+            rng = random.Random(sample_seed)
+            negatives.append(rng.sample(_negative_pool(all_items, forbidden, target), num_negatives))
+    return samples, negatives
 
 
 def build_frequency_tensor(data_dir, num_items):
@@ -180,7 +212,12 @@ def train_one(args, route_mode):
     test = load_pickle(data_dir / "test.pkl")
     valid_neg = load_pickle(data_dir / "valid_negatives.pkl")
     test_neg = load_pickle(data_dir / "test_negatives.pkl")
-    train_split, train_neg = sample_train_candidates(train, valid, test, stats["num_items"], args.train_negatives, args.seed + 503)
+    if args.max_prefixes_per_user > 1:
+        train_split, train_neg = sample_train_prefix_candidates(
+            train, valid, test, stats["num_items"], args.train_negatives, args.seed + 503, args.max_prefixes_per_user
+        )
+    else:
+        train_split, train_neg = sample_train_candidates(train, valid, test, stats["num_items"], args.train_negatives, args.seed + 503)
     train_ds = CandidateDataset(train_split, train_neg, args.max_history_length)
     valid_ds = CandidateDataset(valid, valid_neg, args.max_history_length)
     test_ds = CandidateDataset(test, test_neg, args.max_history_length)
@@ -302,6 +339,7 @@ def train_one(args, route_mode):
         "init_checkpoint": args.init_checkpoint,
         "freeze_event_relation": args.freeze_event_relation,
         "train_route_gate_only": args.train_route_gate_only,
+        "max_prefixes_per_user": args.max_prefixes_per_user,
         "best_epoch": best_epoch,
         "HR@10": hr,
         "NDCG@10": ndcg,
@@ -349,6 +387,7 @@ def main():
     parser.add_argument("--output-dir", default="outputs/beauty/event_gate")
     parser.add_argument("--route-mode", choices=["fixed_half", "learned", "both"], default="both")
     parser.add_argument("--max-history-length", type=int, default=50)
+    parser.add_argument("--max-prefixes-per-user", type=int, default=1)
     parser.add_argument("--train-negatives", type=int, default=32)
     parser.add_argument("--batch-size", type=int, default=128)
     parser.add_argument("--eval-batch-size", type=int, default=512)

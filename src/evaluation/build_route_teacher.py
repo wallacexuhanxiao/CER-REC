@@ -10,18 +10,23 @@ from torch.utils.data import DataLoader, Dataset
 
 from src.models.sasrec import SASRec
 from src.models.semantic_sasrec import SemanticSASRec
-from src.trainers.train_event_gate import file_sha256, sample_train_candidates, set_seed
+from src.trainers.train_event_gate import file_sha256, sample_train_candidates, sample_train_prefix_candidates, set_seed
 
 
 class TeacherDataset(Dataset):
     def __init__(self, split, negatives, max_history_length):
-        self.users = list(split.keys())
+        if isinstance(split, dict):
+            samples = [{"uid": uid, "position": None, **sample} for uid, sample in split.items()]
+            negative_lists = [negatives[sample["uid"]] for sample in samples]
+        else:
+            samples = list(split)
+            negative_lists = list(negatives)
         histories, candidates = [], []
-        for uid in self.users:
-            sample = split[uid]
+        for sample, negs in zip(samples, negative_lists):
             history = sample["history"][-max_history_length:]
             histories.append([0] * (max_history_length - len(history)) + history)
-            candidates.append([sample["target"]] + negatives[uid])
+            candidates.append([sample["target"]] + negs)
+        self.samples = samples
         self.histories = torch.tensor(histories, dtype=torch.long)
         self.candidates = torch.tensor(candidates, dtype=torch.long)
 
@@ -68,6 +73,7 @@ def main():
     parser.add_argument("--semantic-embedding-path", default="data/processed/beauty/item_semantic_embeddings.fp16.npy")
     parser.add_argument("--output-dir", default="/root/autodl-tmp/cer-rec/beauty/route_teacher")
     parser.add_argument("--max-history-length", type=int, default=50)
+    parser.add_argument("--max-prefixes-per-user", type=int, default=1)
     parser.add_argument("--train-negatives", type=int, default=32)
     parser.add_argument("--batch-size", type=int, default=64)
     parser.add_argument("--mask-chunk-size", type=int, default=1024)
@@ -82,7 +88,12 @@ def main():
     train = load_pickle(data_dir / "train.pkl")
     valid = load_pickle(data_dir / "valid.pkl")
     test = load_pickle(data_dir / "test.pkl")
-    train_split, train_neg = sample_train_candidates(train, valid, test, stats["num_items"], args.train_negatives, args.seed + 503)
+    if args.max_prefixes_per_user > 1:
+        train_split, train_neg = sample_train_prefix_candidates(
+            train, valid, test, stats["num_items"], args.train_negatives, args.seed + 503, args.max_prefixes_per_user
+        )
+    else:
+        train_split, train_neg = sample_train_candidates(train, valid, test, stats["num_items"], args.train_negatives, args.seed + 503)
     dataset = TeacherDataset(train_split, train_neg, args.max_history_length)
     loader = DataLoader(dataset, batch_size=args.batch_size, shuffle=False)
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -130,6 +141,8 @@ def main():
         "num_samples": len(dataset),
         "max_history_length": args.max_history_length,
         "train_negatives": args.train_negatives,
+        "max_prefixes_per_user": args.max_prefixes_per_user,
+        "prefix_sampling": "uniform_include_last" if args.max_prefixes_per_user > 1 else "last_only",
         "seed": args.seed,
         "negative_seed": args.seed + 503,
         "cf_abs_delta_q75": cf_scale,
